@@ -63,7 +63,7 @@ const createUserData = async function (req, res) {
         if (isValid(data.address.pincode))
 
             if (!(/^([+]\d{2})?\d{6}$/.test(data.address.pincode)))
-                return res.status(400).send({ status: false, msg: "Please Enter  a Valid pincode Number" })
+                return res.status(400).send({ status: false, msg: "Please Enter a Valid pincode Number" })
 
 
         let savedData = await UserModel.create(data)

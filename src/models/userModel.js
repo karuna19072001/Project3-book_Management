@@ -4,14 +4,14 @@ const UserSchema = new mongoose.Schema({
 
     title: {
         type: String,
-        required: true, 
+        required: true,
         enum: ["Mr", "Mrs", "Miss"],
         trim: true,
     },
 
     name: {
         type: String,
-        required: true, 
+        required: true,
         trim: true,
     },
 
@@ -24,37 +24,37 @@ const UserSchema = new mongoose.Schema({
 
     },
 
-        email: {
-            type:String,
-            required:true,
-            match: [/^\w+([\.-]?\w+)@\w+([\. -]?\w+)(\.\w{2,3})+$/, 'Please fill a valid email address'], 
-            unique:true, 
-            lowercase : true
-        },
+    email: {
+        type: String,
+        required: true,
+        match: [/^\w+([\.-]?\w+)@\w+([\. -]?\w+)(\.\w{2,3})+$/, 'Please fill a valid email address'],
+        unique: true,
+        lowercase: true
+    },
 
     password: {
         type: String,
         required: true,
-         minLen: 8, 
-         maxLen :15
-        },
+        minLen: 8,
+        maxLen: 15
+    },
 
     address: {
-      street: {
-          type: String,
-          trim: true
+        street: {
+            type: String,
+            trim: true
+        },
+        city: {
+            type: String,
+            trim: true
+        },
+        pincode: {
+            type: String,
+            trim: true
+        },
     },
-      city: {
-        type: String,
-        trim: true
-      },
-      pincode: {
-          type: String,
-          trim: true
-      },
-    },
- },
-  {timestamp : true}
-  )
+},
+    { timestamps: true }
+)
 
-  module.exports = mongoose.model("User" , UserSchema)
+module.exports = mongoose.model("User", UserSchema)
