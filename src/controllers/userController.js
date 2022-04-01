@@ -15,14 +15,24 @@ const isValidRequestBody = function (requestBody) {
 const createUserData = async function (req, res) {
     try {
         let data = req.body
-        const { title, name, phone, email, password, address } = data
+    const { title, name, phone, email, password, address } = data
 
         if (!isValidRequestBody(data))
             return res.status(400).send({ status: false, msg: "Please Enter some data" })
-        if (!isValid(data.title)) {
+        
+            if (!isValid(title)) {
             return res.status(400).send({ status: false, msg: "Title is Required" })
         }
-        
+       
+       const titleEnum = function (title){
+           return ["Mr", "Mrs", "Miss"].indexOf(title) !== -1
+       }
+
+       if(!titleEnum(title)){
+           return res.status(400).send({status:false, msg:"Is not valid title provide Mr, Mrs, Miss "})
+       }
+       
+
         if (!isValid(data.name)) {
             return res.status(400).send({ status: false, msg: "Name is Required" })
         }
@@ -63,11 +73,11 @@ const createUserData = async function (req, res) {
         if (isValid(data.address.pincode))
 
             if (!(/^([+]\d{2})?\d{6}$/.test(data.address.pincode)))
-                return res.status(400).send({ status: false, msg: "Please Enter a Valid pincode Number" })
+                return res.status(400).send({ status: false, msg: "Please Enter  a Valid pincode Number" })
 
 
         let savedData = await UserModel.create(data)
-        res.status(201).send({ msg: savedData })
+        res.status(201).send({status :true, msg:"succesfully run", data: savedData })
 
     }
     catch (err) {
@@ -106,10 +116,10 @@ const loginUser = async function (req, res) {
                     userId: user._id,
                     email: user._email
 
-                }, "Group4", { expiresIn: "5hr" }
+                }, "Group4" , { expiresIn: "5hr"}
 
             );
-            res.status(200).setHeader("x-api-key", token);
+            res.status(200).setHeader("x-auth-token", token);
             return res.status(201).send({ status: "LoggedIn", TOKEN: token });
         }
 
