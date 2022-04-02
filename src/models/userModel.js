@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-require('mongoose-type-email');
+//require('mongoose-type-email');
 const UserSchema = new mongoose.Schema({
 
     title: {

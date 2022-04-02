@@ -15,7 +15,7 @@ const isValidRequestBody = function (requestBody) {
 const createUserData = async function (req, res) {
     try {
         let data = req.body
-    const { title, name, phone, email, password, address } = data
+        const { title, name, phone, email, password, address } = data
 
         if (!isValidRequestBody(data))
             return res.status(400).send({ status: false, msg: "Please Enter some data" })
@@ -53,12 +53,6 @@ const createUserData = async function (req, res) {
         if (!isValid(data.email))
             return res.status(400).send({ status: false, msg: "email is required" })
 
-        // let Lowercase = email.toLowerCase()
-        // const filterUser = await UserModel.findOne({ email: Lowercase })
-        // if (!filterUser) {
-        //     return res.status(400).send({ status: false, msg: "no email found" })
-
-        //}
         let alreadyExistEmail = await UserModel.findOne({ email: data.email })
         if (alreadyExistEmail) {
             return res.status(400).send({ status: false, msg: "email already exit" })
@@ -94,7 +88,9 @@ const loginUser = async function (req, res) {
         if (Object.keys(body) != 0) {
             let userName = req.body.email;
             let passwords = req.body.password;
-            if (!(/^\w+([\.-]?\w+)@\w+([\. -]?\w+)(\.\w{2,3})+$/.test(userName))) { return res.status(400).send({ status: false, msg: "Please provide a valid email" }) }
+            if (!(/^\w+([\.-]?\w+)@\w+([\. -]?\w+)(\.\w{2,3})+$/.test(userName))) { 
+                return res.status(400).send({ status: false, msg: "Please provide a valid email" }) 
+            }
             if (!(/^[a-zA-Z0-9!@#$%^&*]{8,15}$/.test(passwords))) {
                 return res.status(400).send({ status: false, msg: "please provide valid password with one uppercase letter ,one lowercase, one character and one number " })
             }

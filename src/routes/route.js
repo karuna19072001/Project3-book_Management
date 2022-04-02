@@ -12,7 +12,7 @@ router.post("/login", UserController.loginUser)
 router.post("/books", BookController.createBook)
 router.get("/books",  BookController.getBook)
 router.get("/books/:bookId",authenticate1.authenticate, BookController.getBookById)
-router.put("/PUT/books/:bookId",authenticate1.authenticate, BookController.updateBooks)
+router.put("/books/:bookId", BookController.updateBooks)
 router.delete("/books/:bookId", authenticate1.authenticate,BookController.deleteById)
  
 router.post("/books/:bookId/review", ReviewController.createReview)

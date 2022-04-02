@@ -1,6 +1,8 @@
 const bookModel = require("../models/bookModel")
 const reviewModel = require("../models/reviewModel")
 const userModel = require("../models/userModel")
+const { default: mongoose } = require('mongoose')
+const ObjectId = mongoose.Schema.Types.ObjectId
 
 
 const isValid = function (value) {
@@ -11,6 +13,10 @@ const isValid = function (value) {
 }
 const isValidRequestBody = function (requestBody) {
     return Object.keys(requestBody).length > 0
+}
+
+const isValidObjectId = function (ObjectId) {
+    return mongoose.Types.ObjectId.isValid(ObjectId)
 }
 
 
@@ -31,12 +37,6 @@ const createBook = async function (req, res) {
             releasedAt
         } = data
 
-
-        let isValidUser = await userModel.findById(userId)
-        if (!isValidUser) {
-            return res.status(400).send({ status: false, msg: "you are not allow to create the data ! .. token is Wrong" })
-        }
-        //if (req.body.userId == req.decodedToken.userId){
         if (!isValidRequestBody(data)) {
             return res.status(400).send({ status: false, msg: "plz enter some data" })
         }
@@ -44,7 +44,6 @@ const createBook = async function (req, res) {
             return res.status(400).send({ status: false, msg: "title  is required" })
         }
         const duplicateTitle = await bookModel.findOne({ title: data.title })
-        //console.log(uniqe)
         if (duplicateTitle) {
             return res.status(400).send({ status: false, msg: "duplicate key title" })
         }
@@ -58,7 +57,6 @@ const createBook = async function (req, res) {
         if (!id) {
             return res.status(400).send({ status: false, msg: "it not valid id" })
         }
-        //console.log(id)
         if (!isValid(ISBN)) {
             return res.status(400).send({ status: false, msg: "ISBN is required" })
         }
@@ -83,6 +81,11 @@ const createBook = async function (req, res) {
         if (isDeleted == true) {
             (/((\d{4}[\/-])(\d{2}[\/-])(\d{2}))/.test(isDeleted))
             return res.status(400).send({ status: false, data: deletedAt })
+        }
+
+        let isValidUser = await userModel.findById(userId)
+        if (!isValidUser) {
+            return res.status(400).send({ status: false, msg: "you are not allow to create the data ! .. token is Wrong" })
         }
 
         const isValid1 = function (value) {
@@ -145,7 +148,7 @@ const getBook = async function (req, res) {
 
 
 const getBookById = async function (req, res) {
-    try {
+    // try {
         let bookId = req.params.bookId;
         if (!bookId) {
             return res.status(400).send({ msg: "please input book ID." })
@@ -178,17 +181,29 @@ const getBookById = async function (req, res) {
 
         res.status(200).send({ status: true, msg: "book list", data: data , total:x});
 
-    } catch (err) {
+    // } catch (err) {
 
-        res.status(500).send({ msg: "error", error: err.message })
-    }
+    //     res.status(500).send({ msg: "error", error: err.message })
+    // }
 }
 
 
 const updateBooks = async function (req, res) {
     try {
         let bookId = req.params.bookId
-        if(!bookId) res.status(400).send({status:false, msg:"bookId is required"})
+        if(!isValidObjectId(bookId)){
+            return res.status(400).send(  {  status: false, msg: "bookId is not valid"} )
+        }
+        if(!bookId) {
+            return res.status(400).send({status:false, msg:"bookId is required"})
+            }
+
+        let Data = req.body
+        if (!isValidRequestBody(Data)) {
+            return res.status(400).send({ status: false, msg: "plz enter some data for updation" })
+        }
+
+       
         let { title, excerpt, releasedAt, ISBN } = req.body
        
         let titleExist = await bookModel.findOne({ title: title })
@@ -216,10 +231,16 @@ const updateBooks = async function (req, res) {
 const deleteById = async function(req, res)  {
 
     try {
+    
+        let bookId = req.params.bookId
+        if(!isValidObjectId(bookId)){
+            return res.status(400).send(  {  status: false, msg: "bookId is not valid"} )
+        }
+        if(!bookId) {
+            return res.status(400).send({status:false, msg:"bookId is required"})
+            }
 
-        let Id = req.params.bookId
-
-        let ifExists = await bookModel.findById(Id)
+        let ifExists = await bookModel.findById(bookId)
 
         if (!ifExists) {
             return res.status(404).send({ Status: false, msg: "Data Not Found" })
@@ -227,7 +248,7 @@ const deleteById = async function(req, res)  {
 
         if (ifExists.isDeleted !== true) {
 
-            let deleteBook = await bookModel.findByIdAndUpdate({ _id: Id }, { $set: { isDeleted: true, deletedAt: Date.now() } }, { new: true })
+            let deleteBook = await bookModel.findByIdAndUpdate({ _id: bookId }, { $set: { isDeleted: true, deletedAt: Date.now() } }, { new: true })
             return res.status(200).send({ status: true, msg: deleteBook })
 
         } else {
